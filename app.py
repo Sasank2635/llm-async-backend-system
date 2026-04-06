@@ -1,8 +1,8 @@
 import streamlit as st
-import requests
-import time
+from google import genai
 
-API_URL = "http://localhost:8252"
+# 🔐 Gemini client (uses Streamlit secrets)
+client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
 
 st.title("🧠 LLM Chat (Async + Queue)")
 st.caption("Async LLM system with queue, retries, and priority scheduling")
@@ -15,34 +15,19 @@ priority = st.selectbox("Priority", ["high", "medium", "low"])
 
 if st.button("Send"):
     if message:
-        # Step 1: Send async request
-        response = requests.post(
-            f"{API_URL}/chat_async",
-            params={
-                "user_id": user_id,
-                "message": message,
-                "priority": priority
-            }
-        )
+        status_placeholder = st.empty()
+        status_placeholder.info("Status: processing...")
 
-        task_id = response.json()["task_id"]
-        st.write(f"🆔 Task ID: {task_id}")
+        try:
+            with st.spinner("Thinking..."):
+                response = client.models.generate_content(
+                    model="gemini-2.5-flash",
+                    contents=message
+                )
 
-        # Step 2: Poll result
-        result_placeholder = st.empty()
+            status_placeholder.success("Status: completed ✅")
+            st.success(response.text)
 
-        while True:
-            res = requests.get(f"{API_URL}/result/{task_id}")
-            data = res.json()
-
-            if data["status"] == "completed":
-                result_placeholder.success(data["result"])
-                break
-
-            elif data["status"] == "failed":
-                result_placeholder.error(data["error"])
-                break
-
-            else:
-                result_placeholder.info(f"Status: {data['status']}")
-                time.sleep(1)
+        except Exception as e:
+            status_placeholder.error("Status: failed ❌")
+            st.error(str(e))
