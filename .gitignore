@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual Environment
+venv/
+.env/
+.env.*
+
+# Environment variables (IMPORTANT)
+.env
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# Streamlit
+.streamlit/
+
+# Python build files
+build/
+dist/
+*.egg-info/
+
+# Cache
+.cache/
+pytest_cache/
+
+# SQLite (if ever used)
+*.db
+
+# Docker
+*.pid
+
+# Screenshots (optional keep or remove)
+# screenshots/
+
+# Temporary files
+*.tmp
+*.swp
